@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Network Emulator</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+    <div class="container mt-5">
+        <h1 class="text-center">Network Emulator Settings</h1>
+        <form method="post" action="/update" class="mb-5">
+            <div class="form-group">
+                <label for="interface">Interface:</label>
+                <select id="interface" name="interface" class="form-control" required>
+                    {% for identifier, custom_name in interfaces.items() %}
+                        <option value="{{ custom_name }}">{{ custom_name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="delay">Delay (ms):</label>
+                <input type="text" id="delay" name="delay" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="jitter">Jitter (ms):</label>
+                <input type="text" id="jitter" name="jitter" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="loss">Packet Loss (%):</label>
+                <input type="text" id="loss" name="loss" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="corrupt">Corrupt (%):</label>
+                <input type="text" id="corrupt" name="corrupt" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="duplicate">Duplicate (%):</label>
+                <input type="text" id="duplicate" name="duplicate" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="reorder">Reorder (%):</label>
+                <input type="text" id="reorder" name="reorder" class="form-control">
+            </div>
+            <div class="form-group">
+                <label for="rate">Rate (mbit):</label>
+                <input type="text" id="rate" name="rate" class="form-control">
+            </div>
+            <button type="submit" class="btn btn-primary">Update</button>
+        </form>
+        <h2 class="text-center">Current Settings</h2>
+        {% for custom_name, output in settings.items() %}
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h3>{{ custom_name }}</h3>
+                </div>
+                <div class="card-body">
+                    <pre>{{ output }}</pre>
+                    {% if errors[custom_name] %}
+                        <div class="alert alert-danger" role="alert">
+                            <h4>Errors</h4>
+                            <pre>{{ errors[custom_name] }}</pre>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+    <!-- Bootstrap JS and dependencies -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.4/dist/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</body>
+</html>
+

@@ -22,7 +22,6 @@ services:
     restart: always
     network_mode: host
     environment:
-      PYTHONUNBUFFERED: 1
       INTERFACE_ens193: from FN_cEDGE01
       INTERFACE_ens224: from HQ_cEDGE01
       INTERFACE_ens225: from RO_cEDGE01

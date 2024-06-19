@@ -20,7 +20,7 @@ services:
   web:
     image: ghcr.io/timon-schwarz/NetSim:latest
     restart: always
-    network_mode: host
+    network_mode: unless-stopped
     environment:
       INTERFACE_ens193: from FN_cEDGE01
       INTERFACE_ens224: from HQ_cEDGE01
@@ -29,5 +29,7 @@ services:
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
+    volumes:
+      - /etc/iproute2/rt_tables:/etc/iproute2/rt_tables
 
 ````

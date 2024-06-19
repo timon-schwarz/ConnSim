@@ -11,8 +11,10 @@ get_interface_ip() {
   ip -o -4 addr show "$1" | awk '{print $4}' | cut -d'/' -f1
 }
 
-# Flush existing rules
-ip rule flush
+# Function to check if an interface is up
+is_interface_up() {
+  ip link show "$1" | grep -q "state UP"
+}
 
 # Initialize table ID counter
 TABLE_ID=100
@@ -32,13 +34,17 @@ for var in $(env); do
       continue
     fi
     
-    # Check if the gateway is reachable via the interface
-    ping -c 1 -I "$INTERFACE" "$GATEWAY_IP" &> /dev/null
-    if [ $? -ne 0 ]; then
-      echo "Error: Gateway $GATEWAY_IP is not reachable via interface $INTERFACE"
+    # Check if the interface is up
+    if ! is_interface_up "$INTERFACE"; then
+      echo "Error: Interface $INTERFACE is not up"
       continue
     fi
     
+    echo "Configuring VRF $TABLE_ID for interface $INTERFACE ($CUSTOM_NAME: $INTERFACE_IP)"
+    
+    # Add table to /etc/iproute2/rt_tables
+    echo "$TABLE_ID $INTERFACE" >> /etc/iproute2/rt_tables
+
     # Add rule for the interface with a unique table ID
     ip rule add iif "$INTERFACE" table "$TABLE_ID"
     

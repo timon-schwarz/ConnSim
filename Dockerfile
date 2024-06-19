@@ -22,7 +22,7 @@ RUN pip install --no-cache-dir -r requirements.txt
 COPY entrypoint.sh /usr/local/bin/entrypoint
 
 # Make the script executable
-RUN chmod +x /usr/local/bin/setup-routing.sh
+RUN chmod +x /usr/local/bin/entrypoint
 
 # Expose the port the app runs on
 EXPOSE 8080

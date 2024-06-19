@@ -1,12 +1,13 @@
-# NETSIM
+# ConnSim
 
 
 ## Usage
-Disclaimer: This container interacts with the network stack of the host and can therefore only be run on Linux systems.
-The container has only been tested on Ubuntu Server LTS 24.
+Disclaimer: This container interacts with the network stack of the host and can therefore only be run on Linux systems. VRFs already present on your host might be deleted if the ID matches the one used by the container. All rules for the interfaces specified in your docker-compose.yml will be deleted.
+The container has only been tested on Ubuntu Server LTS 22.
 
 
 1. Install docker if not already present on your system
+1. Install the iproute2 and iputils-ping packages or the equivalent packages of your distribution
 1. Use ``mkdir`` to create a directory with a name of choice
 1. ``cd`` into that directory
 1. Create your docker-compose.yml. An example is provided below.
@@ -18,18 +19,18 @@ The container has only been tested on Ubuntu Server LTS 24.
 version: '3'
 services:
   web:
-    image: ghcr.io/timon-schwarz/NetSim:latest
-    restart: always
-    network_mode: unless-stopped
+    image: ghcr.io/timon-schwarz/connsim:latest
+    restart: unless-stopeed
+    network_mode: host
     environment:
-      INTERFACE_ens193: from FN_cEDGE01
-      INTERFACE_ens224: from HQ_cEDGE01
-      INTERFACE_ens225: from RO_cEDGE01
-      INTERFACE_ens257: from HQ_cEDGE02
+      GATEWAY_IP: 172.30.218.30
+      INTERFACE_ens193: from_FN_cEDGE01
+      INTERFACE_ens224: from_HQ_cEDGE01
+      INTERFACE_ens225: from_RO_cEDGE01
+      INTERFACE_ens257: from_HQ_cEDGE02
     cap_add:
       - NET_ADMIN
       - SYS_MODULE
     volumes:
       - /etc/iproute2/rt_tables:/etc/iproute2/rt_tables
-
 ````

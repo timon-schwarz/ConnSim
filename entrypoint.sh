@@ -42,8 +42,11 @@ for var in $(env); do
     
     echo "Configuring VRF $TABLE_ID for interface $INTERFACE ($CUSTOM_NAME: $INTERFACE_IP)"
     
-    # Add table to /etc/iproute2/rt_tables
-    echo "$TABLE_ID $INTERFACE" >> /etc/iproute2/rt_tables
+    # Add table to /etc/iproute2/rt_tables if it doesn't already exist
+    echo "$TABLE_ID $INTERFACE" >> /etc/iproute2/rt_ta
+    if ! grep -q "^$TABLE_ID $INTERFACE$" /etc/iproute2/rt_tables; then
+      echo "$TABLE_ID $INTERFACE" >> /etc/iproute2/rt_tables
+    fi
 
     # Add rule for the interface with a unique table ID
     ip rule add iif "$INTERFACE" table "$TABLE_ID"

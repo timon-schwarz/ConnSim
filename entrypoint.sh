@@ -26,6 +26,9 @@ for var in $(env); do
     # Extract interface and custom name
     INTERFACE=$(echo "$var" | cut -d'=' -f1 | sed 's/INTERFACE_//')
     CUSTOM_NAME=$(echo "$var" | cut -d'=' -f2)
+
+    # Decode any encoded spaces in the custom name
+    CUSTOM_NAME=$(echo "$CUSTOM_NAME" | sed 's/%20/ /g')
     
     # Get the IP address of the interface
     INTERFACE_IP=$(get_interface_ip "$INTERFACE")

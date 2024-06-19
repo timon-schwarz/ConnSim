@@ -16,6 +16,15 @@ is_interface_up() {
   ip link show "$1" | grep -q "state UP"
 }
 
+# Function to delete all routing rules associated with an interface
+delete_interface_rules() {
+  INTERFACE=$1
+  # Delete all rules related to the interface
+  while ip rule del iif "$INTERFACE" 2>/dev/null; do
+    :
+  done
+}
+
 # Initialize table ID counter
 TABLE_ID=100
 
@@ -28,12 +37,15 @@ for var in $(env); do
     # Decode any encoded spaces in the custom name
     CUSTOM_NAME=$(echo "$CUSTOM_NAME" | sed 's/%20/ /g')
 
-    # Flush rules and routes
-    ip rule del iif "$INTERFACE" table "$TABLE_ID" 2>/dev/null
+    # Delete all routing rules for the interface
+    # delete_interface_rules "$INTERFACE"
+
+    # Flush routes associated with the interface
     ip route flush table "$TABLE_ID"
 
     # Remove table from /etc/iproute2/rt_tables if it exists
-    sed -i "/^$TABLE_ID /d" /etc/iproute2/rt_tables
+    awk '!/^'"$TABLE_ID"' /' /etc/iproute2/rt_tables > /tmp/rt_tables
+    cat /tmp/rt_tables > /etc/iproute2/rt_tables
 
     # Increment table ID for the next interface
     TABLE_ID=$((TABLE_ID + 1))

@@ -13,17 +13,21 @@ ip rule flush
 # This ensured that traffic always exits on the port is has entered
 # This is imporant because the connections are only applied on the outgoing interface
 # Without this all traffic would be sent out of one random interface and the metrics of said interface
+TABLE_ID=100 # Initialize table ID counter
 for var in $(env); do
   if [[ $var == INTERFACE_* ]]; then
     # Extract interface and custom name
     INTERFACE=$(echo "$var" | cut -d'=' -f1 | sed 's/INTERFACE_//')
     CUSTOM_NAME=$(echo "$var" | cut -d'=' -f2)
     
-    # Add rule for the interface
-    ip rule add iif "$INTERFACE" table "$INTERFACE"
+    # Add rule for the interface with a unique table ID
+    ip rule add iif "$INTERFACE" table "$TABLE_ID"
     
-    # Add route for the interface
-    ip route add default via "$GATEWAY_IP" dev "$INTERFACE" table "$INTERFACE"
+    # Add route for the interface with a unique table ID
+    ip route add default via "$GATEWAY_IP" dev "$INTERFACE" table "$TABLE_ID"
+    
+    # Increment table ID for the next interface
+    TABLE_ID=$((TABLE_ID + 1))
   fi
 done
 
